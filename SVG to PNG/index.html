@@ -1,0 +1,150 @@
+<!DOCTYPE html><html lang="en">
+<head>
+	<title>SVG to PNG</title>
+	<link rel="stylesheet" href="../style.css">
+	<link rel="shortcut icon" type="image/webp" href="../svg.webp">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+	<meta name="description" content="Converts and renders SVG vector image as a PNG pixel image.">
+	<meta name="keywords" content="svg to png, svg converter, tool, offline, open source, github">
+</head>
+
+<body>
+	<!-- header -->
+	<a class="back" href="../index.html"></a>
+	<header>SVG to PNG</header>
+	<hr>
+	<!-- noscript -->
+	<noscript class="error"><img class="icon" src="../deprecated-colour.png"><t class="errorText"></t><img class="icon" src="../deprecated-colour.png"></noscript>
+
+	<!-- settings -->
+	<div class="inline" title="Exported images will use a solid colour for the background instead of transparency">
+		<input id="colourBack" type="checkbox">Background colour
+		<input id="customColour" type="color">
+	</div>
+
+	<div id="largeContainer" style="display: none">
+		<input type="checkbox" id="largeCheck">Run large conversions
+	</div>
+	<hr>
+	<br>
+
+	<input type="file" id="input" accept=".svg" multiple onchange="if (this.files.length === 1) { convert(this.files[0]); } else { batchConvert(this.files); }">
+	<br>
+
+	<input id="width" type="number" min="1" placeholder="width" onchange="canvasDraw()" onkeydown="canvasDraw()">
+	x
+	<input id="height" type="number" min="1" placeholder="height" onchange="canvasDraw()" onkeydown="canvasDraw()">
+	<input id="scale" type="number" min="1" step="1" value="4" placeholder="scale" onchange="changeScale(this.value)" onkeyup="changeScale(this.value)">
+	<br>
+	<br>
+
+	<button >Convert</button>
+	<button onclick="if (input.value !== '') { fileDownloadURL(canvas.toDataURL('image/png'), fileName + '.png', 'image/png') }">Download ⥙</button>
+	<br>
+	<canvas id="idCanvas" style="max-width: 400px; max-height: 400px"></canvas>
+
+
+	<!-- credit -->
+	<div class="credit">
+		<hr>
+		<a href="https://lemocha7.github.io">lemocha</a> 2023 - 2024
+		<br>
+		Using <a href="https://stuk.github.io/jszip/">JSZip</a> library
+	</div>
+</body>
+
+<script src="../download.js"></script>
+<script src="https://stuk.github.io/jszip/dist/jszip.js"></script>
+<script>
+	const canvas = document.getElementById("idCanvas");
+	const ctx = canvas.getContext("2d");
+	let image;
+	const size = [];
+	const baseSize = [];
+
+
+
+	async function convert(file, promise)
+	{
+		// prompt user for file
+		const svg = await fileRead(file, "readAsDataURL");
+
+		image = new Image();
+		image.src = svg;
+
+		// when image is done loading...
+		image.addEventListener("load", () =>
+		{
+			// set with to image width and height
+			baseSize[0] = image.width; baseSize[1] = image.height;
+			width.value = baseSize[0]; height.value = baseSize[1];
+
+			changeScale(scale.value);
+			if (promise !== undefined) { promise(); }
+		});
+	}
+
+	async function batchConvert(fileList)
+	{
+		const zip = new JSZip();
+
+		// for each file
+		const l = fileList.length;
+		for (let i = 0; i < l; i++)
+		{
+			// draw image in canvas, and wait until done
+			await new Promise(resolve => convert(fileList[i], resolve));
+
+			// get canvas data and convert to Blob,
+			// then add PNG file to ZIP
+			await fetch(canvas.toDataURL("image/png")).then(x => x.blob()).then(blob =>
+				zip.file(formatReplace(fileList[i].name, ".png"), blob));
+		}
+
+		// download ZIP
+		fileDownload(await zip.generateAsync({type:"blob"}), "export.zip", "application/zip");
+	}
+
+
+	function canvasDraw()
+	{
+		if (image === undefined) { return; }
+		size[0] = width.value; size[1] = height.value;
+
+		// refuse to draw image over 5000 in either dimension
+		// unless large image option is enabled
+		if (!largeCheck.checked)
+		{
+			largeContainer.style.display = "none";
+			if (size[0] > 5000) { width.value === 5000; largeContainer.style.display = "inline"; return; }
+			if (size[1] > 5000) { height.value === 5000; largeContainer.style.display = "inline";  return; }
+		}
+
+		// set size of canvas and draw image
+		canvas.width = size[0]; canvas.height = size[1];
+
+		// if solid background is set
+		if (colourBack.checked)
+		{
+			// set image background to specified colour
+			ctx.fillStyle = customColour.value;
+			ctx.fillRect(0, 0, size[0], size[1]);
+		}
+		ctx.drawImage(image, 0, 0, size[0], size[1]);
+	}
+	function changeScale(scale)
+	{
+		if (image === undefined) { return; }
+
+		width.value = Math.round(baseSize[0] * scale);
+		height.value = Math.round(baseSize[1] * scale);
+		canvasDraw();
+	}
+</script>
+</html>
+
+
+
+<!-- lemocha - lemocha7.github.io -->
