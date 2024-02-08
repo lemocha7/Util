@@ -1,0 +1,45 @@
+<!DOCTYPE html><html lang="en">
+<head>
+	<title>JSON Parse</title>
+	<link rel="stylesheet" href="../style.css">
+	<link rel="shortcut icon" type="image/webp" href="../deprecated.webp">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+</head>
+
+<body>
+	<!-- header -->
+	<a class="back" href="../index.html"></a>
+	<header>JSON Parse <t class="deprecated">(DEPRECATED)</t></header>
+	<hr>
+	<!-- noscript -->
+	<noscript class="error"><img class="icon" src="../deprecated-colour.png"><t class="errorText"></t><img class="icon" src="../deprecated-colour.png"></noscript>
+	<br>
+
+	<textarea id="txt" rows="8" placeholder="JSON"></textarea>
+	<br>
+	<button onclick="jsonParse(txt.value)">JSON Parse</button>
+	<br>
+	<br>
+	<t id="jsonOut"></t>
+
+
+	<!-- credit -->
+	<div class="credit">
+		<hr>
+		<a href="https://lemocha7.github.io">lemocha</a> 2023
+	</div>
+</body>
+
+<script>
+	function jsonParse(val)
+	{
+		jsonOut.textContent = "invalid JSON";
+		jsonOut.textContent = JSON.parse(val);
+	}
+</script>
+</html>
+
+
+
+<!-- lemocha - lemocha7.github.io -->
