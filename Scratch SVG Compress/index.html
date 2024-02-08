@@ -1,0 +1,281 @@
+<!DOCTYPE html><html lang="en">
+<head>
+	<title>Scratch SVG Compress</title>
+	<link rel="stylesheet" href="../style.css">
+	<link rel="shortcut icon" type="image/webp" href="../svg.webp">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+	<meta name="description" content="Reduces size of SVG files (especially ones exported by Scratch) by up to 50%.">
+	<meta name="keywords" content="svg compress, svg file size reduce, scratch, scratch svg, tool, offline, open source, github">
+</head>
+
+<body>
+	<!-- header -->
+	<a class="back" href="../index.html"></a>
+	<header>Scratch SVG Compress</header>
+	<hr>
+	<!-- noscript -->
+	<noscript class="error"><img class="icon" src="../deprecated-colour.png"><t class="errorText"></t><img class="icon" src="../deprecated-colour.png"></noscript>
+
+	<!-- settings -->
+	<div class="inline" title="DECREASE SIZE: MILD
+Lines no longer end with a curved semi-circle. Lowers file size, but file might not look as intended.">
+		<input id="noLinecap" type="checkbox" checked onchange="svgTrim(svgIn.value)">
+		Linecaps no longer round
+	</div>
+	<div class="inline" title="DECREASE SIZE: LOW
+Removes transparency in colours if specified (e.g. 50% transparency). Lowers file size, but breaks transparent colours.">
+		<input id="noTransparent" type="checkbox" onchange="svgTrim(svgIn.value)">
+		Remove partial transparent colours
+	</div>
+	<br>
+
+	<div class="inline" title="INCREASE SIZE: VERY
+Changes how many decimal places are in numbers. Only change this if the image becomes messed up. Increases file size">
+		<select id="precision" onchange="svgTrim(svgIn.value)">
+			<option value="1">1</option>
+			<option value="10">0.1</option>
+			<option value="100">0.01</option>
+			<option value="1000">0.001</option>
+			<option value="10000">0.0001</option>
+			<option value="100000">no round</option>
+		</select>
+		Number precision
+	</div>
+	<div class="inline" title="INCREASE SIZE: HIGH
+Adds linebreaks and indents to output to aid legibility. Does not affect image. Increases file size">
+		<input id="humanReadable" type="checkbox" onchange="svgTrim(svgIn.value)">
+		Human readable
+	</div>
+	<hr>
+	<br>
+
+	<input type="file" id="input" accept="image/svg+xml" onchange="fileTrim(this.files[0])">
+	<br>
+
+	<textarea id="svgIn" placeholder="SVG Input"></textarea>
+	<textarea id="svgOut" placeholder="Trimmed Output" rows="5"></textarea>
+	<br>
+	<button onclick="svgImgOut.innerHTML = svgOut.value">Update</button>
+	<button onclick="if (svgOut.value !== '') { fileDownload(svgOut.value, 'svg.svg', 'image/svg+xml') }">Download ⥙</button>
+	<pre id="textDiff"></pre>
+
+
+	<div class="center">
+		<svg id="svgImgIn"></svg>
+		-->
+		<svg id="svgImgOut"></svg>
+	</div>
+
+
+	<!-- credit -->
+	<div class="credit">
+		<hr>
+		<a href="https://lemocha7.github.io">lemocha</a> 2023 - 2024
+	</div>
+</body>
+
+<script src="../download.js"></script>
+<script>
+	async function fileTrim(file)
+	{
+		const svg = await fileRead(file, "readAsText");
+		const trim = svgTrim(svg);
+
+		if (svg.length !== trim.length)
+		{
+			svgImgIn.innerHTML = svg;
+			fileDownload(trim, fileName + "-trim.svg", "image/svg+xml");
+		}
+		else
+		{
+			alert("no filesize change");
+		}
+
+		svgIn.value = svg;
+	}
+	function svgTrim(svg)
+	{
+		if (svg === "") { return; }
+		let trim = svg;
+
+		// if human readable setting is checked
+		if (humanReadable.checked)
+		{
+			// add additional tabs and line breaks
+			trim = trim.replaceAll(`)"><g`, `)">
+		<!g`);
+			trim = trim.replaceAll("<g", `
+	<g`);
+			trim = trim.replaceAll("<!g", `<g`);
+			trim = trim.replaceAll("</g>", `
+	</g>`);
+			trim = trim.replaceAll(`/>
+	</g>`, `/>
+		</g>`);
+
+			trim = trim.replaceAll("</svg>", `
+</svg>`);
+			trim = trim.replaceAll("<path", `
+			<path`);
+		}
+		else
+		{
+			// remove tabs and line breaks
+			trim = trim.replaceAll("	", "");
+			trim = trim.replaceAll(`
+`, "");
+		}
+
+		// if linecaps were set to no longer be round
+		if (noLinecap.checked)
+		{
+			// remove round setting on lines
+			trim = trim.replaceAll(` stroke-linecap="round"`, "");
+		}
+
+
+		// YES I ALREADY LOOKED
+		// THIS DOES NOT PREVENT TRANSPARENCY BUG
+		// ITS SOMEHOW THE NUMBER ROUNDING?!?!
+		trim = trim.replaceAll(` xmlns:xlink="http://www.w3.org/1999/xlink"`, "");
+		trim = trim.replaceAll(sliceToQuote(`data-paper-data="`, `"`,  trim), "");
+		trim = trim.replaceAll(` data-paper-data="{&quot;index&quot;:null}"`, "");
+		trim = trim.replaceAll(` stroke-linejoin="miter" stroke-miterlimit="10"`, "");
+
+		trim = trim.replaceAll(` stroke-dasharray="" stroke-dashoffset="0"`, "");
+		trim = trim.replaceAll(` style="mix-blend-mode: normal"`, "");
+		trim = trim.replaceAll(` stroke="none"`, "");
+		trim = trim.replaceAll(` stroke-width="1"`, "");
+		trim = trim.replaceAll(` stroke-linecap="butt"`, "");
+
+		trim = trim.replaceAll(` fill="#000000"`, "");
+		trim = trim.replaceAll(` fill="#ffffff"`, ` fill="#fff"`);
+		trim = trim.replaceAll(` fill="white"`, ` fill="#fff"`);
+
+		trim = trim.replaceAll(` fill="#ff0000"`, ` fill="red"`);
+		trim = trim.replaceAll(` fill="#00ff00"`, ` fill="lime"`);
+		trim = trim.replaceAll(` fill="#0000ff"`, ` fill="blue"`);
+		trim = trim.replaceAll(` fill="#ffff00"`, ` fill="#ff0"`);
+		trim = trim.replaceAll(` fill="#ff00ff"`, ` fill="#f0f"`);
+		trim = trim.replaceAll(` fill="#00ffff"`, ` fill="cyan"`);
+
+		trim = trim.replaceAll(` stroke="black"`,   ` stroke="#000"`);
+		trim = trim.replaceAll(` stroke="#808080"`, ` stroke="grey"`);
+		trim = trim.replaceAll(` stroke="#ffffff"`, ` stroke="#fff"`);
+		trim = trim.replaceAll(` stroke="white"`,   ` stroke="#fff"`);
+		trim = trim.replaceAll(` stroke="#000000"`, ` stroke="#000"`);
+
+		trim = trim.replaceAll(` stroke="#ff0000"`, ` stroke="red"`);
+		trim = trim.replaceAll(` stroke="#00ff00"`, ` stroke="lime"`);
+		trim = trim.replaceAll(` stroke="#0000ff"`, ` stroke="blue"`);
+		trim = trim.replaceAll(` stroke="#ffff00"`, ` stroke="#ff0"`);
+		trim = trim.replaceAll(` stroke="#ff00ff"`, ` stroke="#f0f"`);
+		trim = trim.replaceAll(` stroke="#00ffff"`, ` stroke="cyan"`);
+
+		trim = trim.replaceAll(sliceToQuote(` fill-rule="`, `"`, trim), "");
+		trim = trim.replaceAll(sliceToQuote(` viewBox="`, `"`,  trim), "");
+		trim = trim.replaceAll("<g >", "<g>");
+		trim = trim.replaceAll("  ", " ");
+
+		const index = trim.indexOf("path");
+		trim = trim.replaceAll(trim.slice(trim.indexOf("<!--"), trim.indexOf("-->") + 3), "");
+
+
+		// rounds every number present
+		let l = trim.lastIndexOf(`"/>`);
+		let num = "";
+		for (let i = 50; i < l; i++)
+		{
+			// if character is part of number
+			if (trim[i].search(/[0-9.]/) !== -1)
+			{
+				// add to number string
+				num += trim[i];
+			}
+			else
+			{
+				if (num !== "")
+				{
+					// if no transparency option is checked
+					// or if property is not fill-opacity
+					if (noTransparent.checked || trim.slice(i - num.length - 4, i - num.length) !== 'ty="')
+					{
+						// NEVER round hex colours
+						if (!trim.slice(i - num.length - 6, i - num.length).includes("#"))
+						{
+							// assemble number string and round it
+							let round;
+							if (precision.value !== "1")
+							{
+								// round to however many decimal places specified in settings
+								round = Math.round(Number(num) * precision.value) / precision.value;
+							}
+							else
+							{
+								// else, round to whole number
+								round = Math.round(Number(num));
+							}
+							const diff = num.length - round.toString().length;
+
+							// replace non-rounded number with rounded number
+							trim = replaceAt([num, round], i - num.length, trim);
+							i -= diff;
+							l -= diff;
+						}
+					}
+
+
+					num = "";
+				}
+			}
+		}
+		// handle numbers at the end of strings
+		if (num !== "")
+		{
+			if (precision.value !== "1")
+			{
+				trim = replaceAt([num, Math.round(Number(num) * precision.value) / precision.value], l - num.length, trim);
+			}
+			else
+			{
+				trim = replaceAt([num, Math.round(Number(num))], l - num.length, trim);
+			}
+		}
+
+		// remove negative zero that might be present
+		trim = trim.replaceAll("-0,", "0,");
+		trim = trim.replaceAll("-0l", "0l");
+
+
+
+		// calculate size difference
+		const length = [svg.length, trim.length];
+		textDiff.textContent = `${length[0]} bytes -->  ${length[1]} bytes
+${length[0] - length[1]} bytes saved (${Math.round((1 - length[1] / length[0]) * 1000) / 10}%)`;
+
+
+		// output new SVG
+		svgOut.value = trim;
+		svgImgOut.innerHTML = trim;
+		return trim;
+	}
+
+	function sliceToQuote(input, to, trim)
+	{
+		const index = trim.indexOf(input);
+		return trim.slice(index, trim.indexOf(to, index + input.length) + 1);
+	}
+
+	function replaceAt(replace, index, str)
+	{
+		const find = str.slice(index).indexOf(replace[0]);
+		return str.slice(0, index) + replace[1] + str.slice(index + replace[0].length);
+	}
+</script>
+</html>
+
+
+
+<!-- lemocha - lemocha7.github.io -->
