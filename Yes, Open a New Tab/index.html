@@ -1,0 +1,62 @@
+<!DOCTYPE html><html lang="en">
+<head>
+	<title>Yes, Open a New Tab</title>
+	<link rel="stylesheet" href="../style.css">
+	<link rel="shortcut icon" type="image/webp" href="../misc.webp">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+	<meta name="description" content="Open a link in a new tab, simple as that. Helps mitigate overscroll history navigation.">
+	<meta name="keywords" content="new tab, overscroll history navigation, tool, offline, open source, github">
+</head>
+
+<body>
+	<!-- header -->
+	<a class="back" href="../index.html"></a>
+	<header>Yes, Open a New Tab</header>
+	<hr>
+	<!-- noscript -->
+	<noscript class="error"><img class="icon" src="../deprecated-colour.png"><t class="errorText"></t><img class="icon" src="../deprecated-colour.png"></noscript>
+	<br>
+
+	<input id="input" autofocus onkeydown="if (event.key === 'Enter') { link.click(); }" onkeyup="changeLink(this.value)" onchange="changeLink()">
+	<br>
+	<br>
+
+	<a id="link" target="blank">Yes, Open a New Tab</a>
+
+
+	<!-- credit -->
+	<div class="credit">
+		<hr>
+		<a href="https://lemocha7.github.io">lemocha</a> 2023 - 2024
+	</div>
+</body>
+
+<script>
+	function changeLink(url)
+	{
+		// if link is empty
+		if (url === "")
+		{
+			// remove underline from link
+			url.removeAttribute("href");
+		}
+		else
+		{
+			// add https:// if not present in link
+			if (!url.startsWith("http://") && !url.startsWith("https://") && !input.value.startsWith("file://"))
+			{
+				input.value = "https://" + url;
+			}
+
+			// set link URL to link entered
+			link.href = input.value;
+		}
+	}
+</script>
+</html>
+
+
+
+<!-- lemocha - lemocha7.github.io -->
