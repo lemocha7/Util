@@ -1,0 +1,48 @@
+<!DOCTYPE html><html lang="en">
+<head>
+	<title>Mass Replace</title>
+	<link rel="stylesheet" href="../style.css">
+	<link rel="shortcut icon" type="image/webp" href="../text.webp">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+	<meta name="description" content="Find and replace text.">
+	<meta name="keywords" content="replace text, find and replace, offline, open source, github">
+</head>
+
+<body>
+	<!-- header -->
+	<a class="back" href="../index.html"></a>
+	<header>Mass Replace</header>
+	<hr>
+	<!-- noscript -->
+	<noscript class="error"><img class="icon" src="../deprecated-colour.png"><t class="errorText"></t><img class="icon" src="../deprecated-colour.png"></noscript>
+	<br>
+
+	<input id="from" placeholder="Find">
+	<input id="to" placeholder="Replace">
+	<br>
+	<button onclick="massReplace()">Mass Replace</button>
+	<br>
+	<br>
+	<textarea id="txt" cols="80" rows="20" placeholder="Data"></textarea>
+
+
+	<!-- credit -->
+	<div class="credit">
+		<hr>
+		<a href="https://lemocha7.github.io">lemocha</a> 2022
+	</div>
+</body>
+
+<script>
+	function massReplace()
+	{
+		txt.value = txt.value.replaceAll(from.value, to.value);
+	}
+</script>
+</html>
+
+
+
+<!-- lemocha - lemocha7.github.io -->
