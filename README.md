@@ -17,3 +17,11 @@ Find and replace text.
 **[Yes, Open a New Tab](https://lemocha7.github.io/Util/Yes,%20Open%20a%20New%20Tab/index.html)**
 
 Open a link in a new tab, simple as that. Helps mitigate overscroll history navigation.
+
+**[Multiple Counters](https://lemocha7.github.io/Util/Multiple%20Counters/index.html)**
+
+Create multiple counters for you to increment and set values to. They're also stored in local storage.
+
+**[Character Counter](https://lemocha7.github.io/Util/Character%20Counter/index.html)**
+
+List how often each text character shows up in a string.
