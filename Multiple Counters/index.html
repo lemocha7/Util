@@ -1,0 +1,235 @@
+<!DOCTYPE html><html lang="en">
+<head>
+	<title>Multiple Counters</title>
+	<link rel="stylesheet" href="../style.css">
+	<link rel="shortcut icon" type="image/webp" href="../misc.webp">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+	<meta name="description" content="Create multiple counters for you to increment and set values to. They're also stored in local storage.">
+	<meta name="keywords" content="counter, increment, clicker, local storage, tool, offline, open source, github">
+	<style>
+		#idCounterContainer
+		{
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			justify-content: center;
+		}
+		#idCounterContainer div
+		{
+			display: flex;
+			width: 300px; height: 120px;
+			margin: 8px;
+
+			justify-content: space-between;
+			align-items: flex-start;
+
+			border: 1px solid var(--g);
+			border-radius: 6px;
+		}
+		.counter
+		{
+			position: absolute;
+			margin-top: 50px; margin-left: 150px;
+			scale: 2;
+			border: 0;
+		}
+		.nameInput { width: 240px; }
+		.stepInput
+		{
+			position: absolute;
+			margin-top: 19px;
+		}
+		.newContainer
+		{
+			justify-content: center !important;
+			align-items: center !important;
+			order: 1;
+		}
+		.newContainer button { scale: 1.5; }
+		.plus, .minus
+		{
+			position: absolute;
+			width: 80px; height: 28px;
+			margin-top: 84px;
+			font-size: 14pt;
+		}
+		.plus { margin-left: 66px; }
+		.minus { margin-left: 152px; }
+	</style>
+</head>
+
+<body>
+	<!-- header -->
+	<a class="back" href="../index.html"></a>
+	<header>Multiple Counters</header>
+	<hr>
+	<!-- noscript -->
+	<noscript class="error"><img class="icon" src="../deprecated-colour.png"><t class="errorText"></t><img class="icon" src="../deprecated-colour.png"></noscript>
+	<br>
+
+	<div id="idCounterContainer">
+		<div class="newContainer">
+			<button onclick="newCounter()">+</button>
+		</div>
+	</div>
+
+
+	<!-- credit -->
+	<div class="credit">
+		<hr>
+		Counters are stored using Local Storage
+		<br>
+		<a href="https://lemocha7.github.io">lemocha</a> 2024
+	</div>
+</body>
+
+<script>
+	const counterContainer = document.getElementById("idCounterContainer");
+	let size = 0;
+
+	// create counters from local storage
+	{
+		// see what the highest ID in local storage is
+		let highest = 0;
+		for (let x in localStorage)
+		{
+			if (x.startsWith("counter") && !x.startsWith("counterName") && !x.startsWith("counterStep"))
+			{
+				const id = Number(x.slice(7));
+				if (id > highest)
+				{
+					highest = id;
+				}
+			}
+		}
+
+		// for every number up to highest ID
+		highest++;
+		for (let i = 0; i < highest; i++)
+		{
+			// create counter with values from local storage
+			newCounter(localStorage.getItem("counter" + i),
+			           localStorage.getItem("counterName" + i),
+			           localStorage.getItem("counterStep" + i));
+		}
+	}
+
+	function newCounter(value, name, step)
+	{
+		const div = document.createElement("div");
+
+		// number counter attributes
+		const counter = document.createElement("input");
+		counter.value = 0;
+		counter.type = "number";
+		counter.classList = "counter";
+		counter.style.width = "22px";
+		counter.onchange = function()
+		{
+			localStorage.setItem("counter" + div.id, this.value);
+			this.style.width = (this.value.length * 8 + 14) + "px";
+			this.style.marginLeft = (154 - (this.value.length * 4)) + "px";
+		};
+
+
+		// counter title attributes
+		const nameInput = document.createElement("input");
+		nameInput.classList = "nameInput";
+		nameInput.placeholder = "Counter Name";
+		nameInput.addEventListener("change", () => localStorage.setItem("counterName" + div.id, nameInput.value));
+
+
+		// counter step attributes
+		const stepInput = document.createElement("input");
+		stepInput.value = 1;
+		stepInput.step = .5;
+		stepInput.type = "number";
+		stepInput.classList = "stepInput";
+		stepInput.placeholder = "Step Value";
+		stepInput.addEventListener("change", () => localStorage.setItem("counterStep" + div.id, stepInput.value));
+
+
+		// plus / minus button attributes
+		const plus = document.createElement("button");
+		plus.appendChild(document.createTextNode("+"));
+		plus.classList = "plus";
+		plus.addEventListener("click", () =>
+		{
+			counter.value = Number(counter.value) + Number(stepInput.value);
+			counter.onchange();
+		});
+
+		const minus = document.createElement("button");
+		minus.appendChild(document.createTextNode("-"));
+		minus.classList = "minus";
+		minus.addEventListener("click", () =>
+		{
+			counter.value = Number(counter.value) - Number(stepInput.value);
+			counter.onchange();
+		});
+
+
+		// removal button attributes
+		const remove = document.createElement("button");
+		remove.addEventListener("click", () =>
+		{
+			div.remove();
+			localStorage.removeItem("counter" + div.id);
+			localStorage.removeItem("counterName" + div.id);
+			localStorage.removeItem("counterStep" + div.id);
+			size--;
+		});
+
+		const img = document.createElement("img");
+		img.src = "../remove.png";
+		remove.appendChild(img);
+
+
+		// set ID to the first empty one
+		sizeCheck(div, 0);
+
+
+		// if arguments are used, set input values to them
+		if (value !== undefined && value !== null && value !== "")
+		{
+			counter.value = value;
+			counter.onchange();
+		}
+		if (name !== undefined && name !== null) { nameInput.value = name; }
+		if (step !== undefined && step !== null && step !== "") { stepInput.value = step; }
+
+
+		// append elements to container
+		div.appendChild(counter);
+		div.appendChild(nameInput);
+		div.appendChild(stepInput);
+		div.appendChild(plus);
+		div.appendChild(minus);
+		div.appendChild(remove);
+		counterContainer.appendChild(div);
+		size++;
+	}
+
+
+	function sizeCheck(div, offset)
+	{
+		// if counter ID is not taken
+		if (document.getElementById(size + offset) === null)
+		{
+			// set ID to the first empty ID
+			div.id = size + offset;
+		}
+		else
+		{
+			// run the function again, trying the next ID
+			sizeCheck(div, offset + 1);
+		}
+	}
+</script>
+</html>
+
+
+
+<!-- lemocha - lemocha7.github.io -->
