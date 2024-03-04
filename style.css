@@ -1,31 +1,40 @@
+:root
+{
+        --w: gainsboro;
+        --g: grey;
+        --b: rgb(10,10,20);
+        --r: orangered;
+}
 body
 {
 	text-align: center;
 	overflow-x: hidden;
+        padding-bottom: 40px;
 }
 body, button, input, textarea, select, pre
 {
 	font-family: Arial, sans-serif;
-	color: gainsboro; background-color: rgb(10,10,20);
+	color: var(--w); background-color: var(--b);
 	user-select: none;
 }
 button, input, textarea, select, canvas, svg
 {
-	border: 1px solid grey;
+	border: 1px solid var(--g);
 	border-radius: 4px;
 }
-button:focus, input:focus, textarea:focus
+button:focus, input:focus, textarea:focus, select:focus
 {
-	border: 1px solid white;
+	border: 1px solid transparent;
+        outline: 2px solid var(--w);
 }
 
 img { image-rendering: pixelated; }
 h1 { margin-bottom: 10px; margin-left: -20px; }
 header { font-weight: bold; font-size: 14pt; }
-input, textarea { font-family: "Courier New", monospace; }
+input, textarea, .monospace { font-family: "Courier New", monospace; }
 a { color: deepskyblue; }
-.deprecated { color: orangered; }
-.error { display: block; border: 2px solid orangered; padding: 8px; }
+.deprecated { color: var(--r); }
+.error { display: block; border: 2px solid var(--r); padding: 8px; }
 .errorText:after { margin: 20px; content: "Please enable JavaScript to use these tools"; }
 
 div[title] { cursor: help; }
@@ -40,12 +49,13 @@ hr
 	width: 100%; height: 2px;
 	border: none;
 
-	background: linear-gradient(90deg, transparent, grey, transparent);
+	background: linear-gradient(90deg, transparent, var(--g), transparent);
 }
 textarea
 {
 	width: calc(100% - 8px);
 	max-width: 800px;
+        resize: vertical;
 }
 .center
 {
@@ -54,6 +64,7 @@ textarea
 	align-items: center;
 }
 .center * { margin: 0 4px; }
+.column { flex-direction: column; }
 
 .back
 {
@@ -66,7 +77,9 @@ textarea
 	position: fixed;
 	bottom: 0; left: 0;
 	width: 100%;
+        background-color: var(--b);
 }
+.credit hr { margin-top: 0; }
 
 
 
