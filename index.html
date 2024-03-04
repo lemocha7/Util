@@ -17,9 +17,10 @@
 		{
 			display: flex;
 			width: 300px;
+                        margin: 4px 8px;
 			flex-direction: column;
 		}
-		div small { margin-bottom: 10px; }
+		div small { margin-bottom: 24px; }
 	</style>
 </head>
 
@@ -27,10 +28,11 @@
 	<!-- header -->
 	<header>lemocha's Utilities</header>
 	<hr>
-
+        <!-- noscript -->
 	<noscript class="error"><img class="icon" src="deprecated-colour.png"><t class="errorText"></t><img class="icon" src="deprecated-colour.png"></noscript>
 
 	<div class="list">
+                <!-- SVG -->
 		<div>
 			<h1>
 				<img class="icon" src="svg.webp">
@@ -43,27 +45,34 @@
 			<small>Reduces size of SVG files (especially ones exported by Scratch) by up to 50%.</small>
 		</div>
 
-
+                <!-- TEXT -->
 		<div>
 			<h1>
 				<img class="icon" src="text.webp">
-				Text
-			</h1>
+				Data
+			</h1>	
+                        <a href="Character Counter/index.html">Character Counter</a>
+                        <small>List how often each text character shows up in a string.</small>
+			
 			<a href="Mass Replace/index.html">Mass Replace</a>
 			<small>Find and replace text.</small>
 		</div>
 
-
+                <!-- MISC -->
 		<div>
 			<h1>
 				<img class="icon" src="misc.webp">
 				Misc
 			</h1>
+                        <a href="Multiple Counters/index.html">Multiple Counters</a>
+                        <small>Create multiple counters for you to increment and set values to. They're also stored in local storage.</small>
+			
 			<a href="Yes, Open a New Tab/index.html">Yes, Open a New Tab</a>
 			<small>Open a link in a new tab, simple as that. Helps mitigate overscroll history navigation.</small>
 		</div>
 
-
+	
+                <!-- DEPRECATED -->
 		<div>
 			<h1 class="deprecated">
 				<img class="icon" src="deprecated-colour.png">
@@ -81,10 +90,7 @@
 
 
 	<!-- credit -->
-	<div class="credit">
-		<hr>
-		<a href="https://lemocha7.github.io">lemocha</a> 2022 - 2024
-	</div>
+	<div class="credit"><hr><a href="https://lemocha7.github.io">lemocha</a> 2022 - 2024</div>
 </body>
 </html>
 
