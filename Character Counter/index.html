@@ -1,0 +1,129 @@
+<!DOCTYPE html><html lang="en">
+<head>
+	<title>Character Counter</title>
+	<link rel="stylesheet" href="../style.css">
+	<link rel="shortcut icon" type="image/webp" href="../text.webp">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+	<meta name="description" content="List how often each text character shows up in a string.">
+	<meta name="keywords" content="text count, letter counter, character counter, tool, offline, open source, github">
+	<style>
+		.hundred > div.monospace { width: 58px; }
+		div.monospace
+		{
+			justify-content: flex-end;
+			user-select: text;
+			width: 36px;
+		}
+		span { width: 30px; }
+	</style>
+</head>
+
+<body>
+	<!-- header -->
+	<a class="back" href="../index.html"></a>
+	<header>Character Counter</header>
+	<hr>
+	<!-- noscript -->
+	<noscript class="error"><img class="icon" src="../deprecated-colour.png"><t class="errorText"></t><img class="icon" src="../deprecated-colour.png"></noscript>
+
+	<textarea id="textIn" placeholder="Input">Example Text</textarea>
+	<br>
+
+	<button onclick="if (textIn.value !== '') { textCount(textIn.value); }">Count</button>
+	<br>
+	<br>
+
+	<div id="idListContainer" class="center column"></div>
+
+
+	<!-- credit -->
+	<div class="credit">
+		<hr>
+		<a href="https://lemocha7.github.io">lemocha</a> 2024
+	</div>
+</body>
+
+<script>
+	const listContainer = document.getElementById("idListContainer");
+	function textCount(text)
+	{
+		// delete all elements in list container
+		while (listContainer.hasChildNodes())
+		{
+			listContainer.removeChild(listContainer.firstChild);
+		}
+
+		const arr = text.split("").sort();
+
+		const l = arr.length;
+		if (l === 0) { return; }
+		if (l === 1) { listMake(arr[0], 1); return; }
+
+		let char = arr[0];
+		let num = 1;
+		const count = [];
+		for (let i = 1; i < l; i++)
+		{
+			if (arr[i] === char)
+			{
+				num++;
+			}
+			else
+			{
+				count.push([char, num]);
+				char = arr[i];
+
+				if (char !== undefined)
+				{
+					num = 1;
+				}
+			}
+		}
+		count.push([arr[l - 1], num]);
+
+		// sort letters from highest to lowest count
+		const sort = count.sort(function(a, b) { return b[1]-a[1] });
+
+		listContainer.classList.remove("hundred");
+		if (sort[0][1] > 99)
+		{
+			listContainer.classList.add("hundred");
+		}
+
+		sort.forEach(currentValue => listMake(currentValue[0], currentValue[1]));
+	}
+
+
+	function listMake(char, num)
+	{
+		// create elements
+		const div = document.createElement("div");
+		const letter = document.createElement("big");
+		const count = document.createElement("span");
+
+		// set name for undisplayable characters
+		switch (char)
+		{
+			case " ": char = "SPACE"; break;
+			case "\t": char = "TAB"; break;
+			case "\n": char = "BREAK"; break;
+		}
+
+		// set attributes
+		letter.appendChild(document.createTextNode(char));
+		div.classList = "monospace center";
+		count.appendChild(document.createTextNode(num));
+
+		// append elements to list
+		div.appendChild(letter);
+		div.appendChild(count);
+		listContainer.appendChild(div);
+	}
+</script>
+</html>
+
+
+
+<!-- lemocha - lemocha7.github.io -->
